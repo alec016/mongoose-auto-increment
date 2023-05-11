@@ -12,3 +12,4 @@ pruebas/node_modules
 pruebas/*-lock.json
 
 .vs
+.vscode
