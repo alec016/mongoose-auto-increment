@@ -1,1 +1,8 @@
+# node modules folder
 node_modules
+
+#npm ignore files/folders for publishing
+.npmignore
+
+#ignore npm/pnpm/yarn lock json files
+*-lock.json
