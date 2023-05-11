@@ -1,31 +1,31 @@
 /* eslint-disable brace-style */
 /* eslint-disable n/handle-callback-err */
 // Module Scope
-import mongoose, { Schema } from 'mongoose';
-import extend from 'extend';
-import thiz from './package.json';
-import { exec } from 'child_process';
+const { Schema } = require('mongoose');
+const extend = require('extend');
+const thiz = require('./package.json');
+const { exec } = require('child_process');
 const startAt = (startAt) => startAt;
 const incrementBy = (incrementBy) => incrementBy;
 var colors;
 (function (colors) {
-    colors["Black"] = "\x0033[0;30m";
-    colors["Red"] = "\x0033[0;31m";
-    colors["Green"] = "\x0033[0;32m";
-    colors["Orange"] = "\x0033[0;33m";
-    colors["Blue"] = "\x0033[0;34m";
-    colors["Purple"] = "\x0033[0;35m";
-    colors["Cyan"] = "\x0033[0;36m";
-    colors["LightGray"] = "\x0033[0;37m";
-    colors["DarkGray"] = "\x0033[1;30m";
-    colors["LightRed"] = "\x0033[1;31m";
-    colors["LightGreen"] = "\x0033[1;32m";
-    colors["Yellow"] = "\x0033[1;33m";
-    colors["LightBlue"] = "\x0033[1;34m";
-    colors["LightPurple"] = "\x0033[1;35m";
-    colors["LightCyan"] = "\x0033[1;36m";
-    colors["White"] = "\x0033[1;37m";
-    colors["Clear"] = "\x0033[0m";
+    colors["Black"] = "\u001B[0;30m";
+    colors["Red"] = "\u001B[0;31m";
+    colors["Green"] = "\u001B[0;32m";
+    colors["Orange"] = "\u001B[0;33m";
+    colors["Blue"] = "\u001B[0;34m";
+    colors["Purple"] = "\u001B[0;35m";
+    colors["Cyan"] = "\u001B[0;36m";
+    colors["LightGray"] = "\u001B[0;37m";
+    colors["DarkGray"] = "\u001B[1;30m";
+    colors["LightRed"] = "\u001B[1;31m";
+    colors["LightGreen"] = "\u001B[1;32m";
+    colors["Yellow"] = "\u001B[1;33m";
+    colors["LightBlue"] = "\u001B[1;34m";
+    colors["LightPurple"] = "\u001B[1;35m";
+    colors["LightCyan"] = "\u001B[1;36m";
+    colors["White"] = "\u001B[1;37m";
+    colors["Clear"] = "\u001B[0m";
 })(colors || (colors = {}));
 let counterSchema;
 let IdentityCounter;
@@ -49,6 +49,16 @@ const templateError = (method, error) => `
   |${' '.repeat(38)}|
   ${'-'.repeat(40)}${colors.Clear}
 `;
+
+const templateVersionMatch = () => `
+  ${colors.Green}${'-'.repeat(37)}
+  |${' '.repeat(35)}|
+  |${colors.White}    You have the latest Version    ${colors.Green}|
+  |${colors.White}     of mongoose-autoincrement     ${colors.Green}|
+  |${' '.repeat(35)}|
+  ${'-'.repeat(37)}${colors.Clear}
+`
+
 // Initialize plugin by creating counter collection in database.
 const initialize = function (connection) {
     exec(`npm view ${moduleName} version`, (error, stdout, stderr) => {
@@ -63,10 +73,12 @@ const initialize = function (connection) {
         stdout = stdout.replaceAll('\n', '');
         if (version < stdout) {
             console.log(templateVersion(stdout));
+        } else {
+            console.log(templateVersionMatch())
         }
     });
     try {
-        IdentityCounter = mongoose.model('IdentityCounter');
+        IdentityCounter = connection.model('IdentityCounter');
     }
     catch (ex) {
         if (ex.name === 'MissingSchemaError') {
@@ -79,7 +91,7 @@ const initialize = function (connection) {
             // Create a unique index using the "field" and "model" fields.
             counterSchema.index({ field: 1, model: 1 }, { unique: true, required: true, index: -1 });
             // Create model using new schema.
-            IdentityCounter = mongoose.model('IdentityCounter', counterSchema);
+            IdentityCounter = connection.model('IdentityCounter', counterSchema);
         }
         else
             throw ex;

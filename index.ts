@@ -1,7 +1,7 @@
 /* eslint-disable brace-style */
 /* eslint-disable n/handle-callback-err */
 // Module Scope
-import mongoose, {
+import {
   Schema,
   Connection,
   SchemaTypeOptions,
@@ -17,6 +17,7 @@ import mongoose, {
   Types,
   Unpacked
 } from 'mongoose'
+
 import extend from 'extend'
 import thiz from './package.json'
 import { exec } from 'child_process'
@@ -73,35 +74,35 @@ type Fields = {
   [field: string]: Field
 }
 
-interface AutoIncrementOptions {
-  model?: String,
-  field?: String,
-  startAt?: Integer<any>,
-  incrementBy?: PositiveIntegerWithOutZero<any>,
-  unique?: Boolean
+interface AutoIncrementOptions<T extends number, K extends number> {
+  model?: string,
+  field: string,
+  startAt: Integer<T>,
+  incrementBy: PositiveIntegerWithOutZero<K>,
+  unique?: boolean
 }
 const startAt = <T extends number>(startAt: Integer<T>): Integer<T> => startAt
 
 const incrementBy = <T extends number>(incrementBy: PositiveIntegerWithOutZero<T>): PositiveIntegerWithOutZero<T> => incrementBy
 
 enum colors {
-  Black = '\033[0;30m',
-  Red = '\033[0;31m',
-  Green = '\033[0;32m',
-  Orange = '\033[0;33m',
-  Blue = '\033[0;34m',
-  Purple = '\033[0;35m',
-  Cyan = '\033[0;36m',
-  LightGray = '\033[0;37m',
-  DarkGray = '\033[1;30m',
-  LightRed = '\033[1;31m',
-  LightGreen = '\033[1;32m',
-  Yellow = '\033[1;33m',
-  LightBlue = '\033[1;34m',
-  LightPurple = '\033[1;35m',
-  LightCyan = '\033[1;36m',
-  White = '\033[1;37m',
-  Clear = '\033[0m'
+  Black = '\x1B[0;30m',
+  Red = '\x1B[0;31m',
+  Green = '\x1B[0;32m',
+  Orange = '\x1B[0;33m',
+  Blue = '\x1B[0;34m',
+  Purple = '\x1B[0;35m',
+  Cyan = '\x1B[0;36m',
+  LightGray = '\x1B[0;37m',
+  DarkGray = '\x1B[1;30m',
+  LightRed = '\x1B[1;31m',
+  LightGreen = '\x1B[1;32m',
+  Yellow = '\x1B[1;33m',
+  LightBlue = '\x1B[1;34m',
+  LightPurple = '\x1B[1;35m',
+  LightCyan = '\x1B[1;36m',
+  White = '\x1B[1;37m',
+  Clear = '\x1B[0m'
 }
 
 let counterSchema: any
@@ -128,8 +129,17 @@ const templateError = (method: string, error: string) => `
   ${'-'.repeat(40)}${colors.Clear}
 `
 
+const templateVersionMatch = () => `
+  ${colors.Green}${'-'.repeat(37)}
+  |${' '.repeat(35)}|
+  |${colors.White}    You have the latest Version    ${colors.Green}|
+  |${colors.White}     of mongoose-autoincrement     ${colors.Green}|
+  |${' '.repeat(35)}|
+  ${'-'.repeat(37)}${colors.Clear}
+`
+
 // Initialize plugin by creating counter collection in database.
-const initialize = function (connection: typeof Connection) {
+const initialize = function (connection: Connection) {
   exec(`npm view ${moduleName} version`, (error: any, stdout: any, stderr: any) => {
     if(error) {
       console.error(`error: ${error.message}`)
@@ -142,10 +152,12 @@ const initialize = function (connection: typeof Connection) {
     stdout = stdout.replaceAll('\n', '')
     if (version < stdout) {
       console.log(templateVersion(stdout))
+    } else {
+      console.log(templateVersionMatch())
     }
   })
   try {
-    IdentityCounter = mongoose.model('IdentityCounter')
+    IdentityCounter = connection.model('IdentityCounter')
   } catch (ex: any) {
     if (ex.name === 'MissingSchemaError') {
       // Create new counter schema.
@@ -162,13 +174,13 @@ const initialize = function (connection: typeof Connection) {
       )
       
       // Create model using new schema.
-      IdentityCounter = mongoose.model('IdentityCounter', counterSchema)
+      IdentityCounter = connection.model('IdentityCounter', counterSchema)
     } else throw ex
   }
 }
 
 // The function to use when invoking the plugin on a custom schema.
-const plugin = async function(schema: any, options: AutoIncrementOptions) {
+const plugin = async function<T extends number, K extends number>(schema: Schema, options: AutoIncrementOptions<T, K> | string) {
   // If we don't have reference to the counterSchema or the IdentityCounter model then the plugin was most likely not
   // initialized properly so throw an error.
   if (!counterSchema || !IdentityCounter) { 
@@ -176,7 +188,7 @@ const plugin = async function(schema: any, options: AutoIncrementOptions) {
   }
 
   // Default settings and plugin scope variables.
-  const settings = {
+  const settings: AutoIncrementOptions<T, K> | AutoIncrementOptions<0 , 1> = {
     model: undefined, // The model to configure the plugin for.
     field: `_id`, // The field the plugin should track.
     startAt: startAt(0), // The number the count should start at.

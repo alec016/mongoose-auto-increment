@@ -2,6 +2,9 @@
 // Minimum TypeScript Version: 5
 
 declare module '@alec016/mongoose-autoincrement' {
+  /**
+  * Type importation
+  */
   import type {
     Schema,
     Connection,
@@ -18,6 +21,7 @@ declare module '@alec016/mongoose-autoincrement' {
     Types,
     Unpacked
   } from 'mongoose'
+
   /**
    * Type definition for Integer numbers ( no decimals )
    */
@@ -39,6 +43,9 @@ declare module '@alec016/mongoose-autoincrement' {
     number extends T ? never :
     `${T}` extends '0' | `-${any}` | `${any}.${any}` ? never : T
 
+  /**
+   * Type definition for Schema type Fields
+   */
   type Type<T> = 
     T extends string 
       ? StringSchemaDefinition 
@@ -67,13 +74,19 @@ declare module '@alec016/mongoose-autoincrement' {
                             : T extends Function[] 
                               ? AnyArray<Function | string> | AnyArray<SchemaTypeOptions<Unpacked<T>>> 
                               : T | SchemaType | Schema<any, any, any> | SchemaDefinition<T> | Function | AnyArray<Function>;
-  
+
+  /**
+  * Type definition for each field in Fields hash
+  */
   type Field<T = undefined> = {
     type: Type<T>
     require: boolean,
     unique?: boolean
   }
-  
+
+  /**
+   * Type definition for Fields hash
+   */
   type Fields = {
     [field: string]: Field
   }
@@ -82,12 +95,12 @@ declare module '@alec016/mongoose-autoincrement' {
    *
    * @interface AutoIncrementOptions
    */
-  interface AutoIncrementOptions {
-    model?: String,
-    field?: String,
-    startAt?: Integer<any>,
-    incrementBy?: PositiveIntegerWithOutZero<any>,
-    unique?: Boolean
+  interface AutoIncrementOptions<T extends number, K extends number> {
+    model?: string,
+    field: string,
+    startAt: Integer<T>,
+    incrementBy: PositiveIntegerWithOutZero<K>,
+    unique?: boolean
   }
 
   /**
@@ -105,23 +118,23 @@ declare module '@alec016/mongoose-autoincrement' {
    * @enum {number}
    */
   enum colors {
-    Black = '\033[0;30m',
-    Red = '\033[0;31m',
-    Green = '\033[0;32m',
-    Orange = '\033[0;33m',
-    Blue = '\033[0;34m',
-    Purple = '\033[0;35m',
-    Cyan = '\033[0;36m',
-    LightGray = '\033[0;37m',
-    DarkGray = '\033[1;30m',
-    LightRed = '\033[1;31m',
-    LightGreen = '\033[1;32m',
-    Yellow = '\033[1;33m',
-    LightBlue = '\033[1;34m',
-    LightPurple = '\033[1;35m',
-    LightCyan = '\033[1;36m',
-    White = '\033[1;37m',
-    Clear = '\033[0m'
+    Black = '\x1B[0;30m',
+    Red = '\x1B[0;31m',
+    Green = '\x1B[0;32m',
+    Orange = '\x1B[0;33m',
+    Blue = '\x1B[0;34m',
+    Purple = '\x1B[0;35m',
+    Cyan = '\x1B[0;36m',
+    LightGray = '\x1B[0;37m',
+    DarkGray = '\x1B[1;30m',
+    LightRed = '\x1B[1;31m',
+    LightGreen = '\x1B[1;32m',
+    Yellow = '\x1B[1;33m',
+    LightBlue = '\x1B[1;34m',
+    LightPurple = '\x1B[1;35m',
+    LightCyan = '\x1B[1;36m',
+    White = '\x1B[1;37m',
+    Clear = '\x1B[0m'
   }
 
   /**
@@ -135,18 +148,19 @@ declare module '@alec016/mongoose-autoincrement' {
    * The function to use when invoking the plugin on a custom schema.
    *
    * @param {Schema} schema
-   * @param {(AutoIncrementOptions | String)} options
+   * @param {(AutoIncrementOptions<T, K> | string)} options
    */
-  function plugin(schema: Schema, options: AutoIncrementOptions | String): void
+  function plugin<T, K>(schema: Schema, options: AutoIncrementOptions<T, K> | string): void
 
   /**
    * Default template Error with method and cause
    *
-   * @param {String} [method='']
-   * @param {String} [error='']
+   * @param {string} [method='']
+   * @param {string} [error='']
    * @return {*}  {ColorizedString}
    */
-  function templateError(method?: String, error?: String): ColorizedString
+  function templateError(method: string, error: string): ColorizedString
+  function templateVersion(version: string): ColorizedString
 
   function startAt<T extends number>(startAt: Integer<T>): Integer<T>
   
