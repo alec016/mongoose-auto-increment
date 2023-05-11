@@ -150,7 +150,7 @@ declare module '@alec016/mongoose-autoincrement' {
    * @param {Schema} schema
    * @param {(AutoIncrementOptions<T, K> | string)} options
    */
-  function plugin<T, K>(schema: Schema, options: AutoIncrementOptions<T, K> | string): void
+  function plugin<T extends number, K extends number>(schema: Schema, options: AutoIncrementOptions<T, K> | string): void
 
   /**
    * Default template Error with method and cause
