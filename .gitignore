@@ -11,4 +11,4 @@ node_modules
 pruebas/node_modules
 pruebas/*-lock.json
 
-./.vs
+.vs
