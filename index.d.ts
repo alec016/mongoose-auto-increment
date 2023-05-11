@@ -162,11 +162,37 @@ declare module '@alec016/mongoose-autoincrement' {
    * @return {*}  {ColorizedString}
    */
   function templateError(method: string, error: string): ColorizedString
+
+  /**
+   * Defult template Version message
+   *
+   * @param {string} version
+   * @return {*}  {ColorizedString}
+   */
   function templateVersion(version: string): ColorizedString
 
+  /**
+   * AutoConversion function: number => Integer<number>
+   *
+   * @template T
+   * @param {Integer<T>} startAt
+   * @return {*}  {Integer<T>}
+   */
   function startAt<T extends number>(startAt: Integer<T>): Integer<T>
   
+  /**
+   * AutoConversion function: number => PositiveIntegerWithOutZero<number>
+   *
+   * @template T
+   * @param {PositiveIntegerWithOutZero<T>} incrementBy
+   * @return {*}  {PositiveIntegerWithOutZero<T>}
+   */
   function incrementBy<T extends number>(incrementBy: PositiveIntegerWithOutZero<T>): PositiveIntegerWithOutZero<T>
   
+  /**
+   * exported functions, props of auto-increment plugin
+   *
+   * @enum {number}
+   */
   enum autoIncrement { initialize, plugin, colors, templateError }
 }
