@@ -4,6 +4,7 @@
   "description": "This plugin allows you to autoincrement any field on any mongoose schema that you wish.",
   "main": "dist/index.js",
   "types": "index.d.ts",
+  "repository": "https://github.com:alec016/mongoose-auto-increment",
   "scripts": {
     "test": "node_modules/mocha/bin/mocha",
     "build": "tsc"
