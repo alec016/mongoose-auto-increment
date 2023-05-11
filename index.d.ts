@@ -147,6 +147,8 @@ declare module '@alec016/mongoose-autoincrement' {
   /**
    * The function to use when invoking the plugin on a custom schema.
    *
+   * @template T
+   * @template K
    * @param {Schema} schema
    * @param {(AutoIncrementOptions<T, K> | string)} options
    */
