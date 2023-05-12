@@ -1,7 +1,7 @@
 /* eslint-disable brace-style */
 /* eslint-disable n/handle-callback-err */
 // Module Scope
-import {
+import mongoose, {
   Schema,
   Connection,
   SchemaTypeOptions,
@@ -15,7 +15,8 @@ import {
   SchemaDefinition,
   StringSchemaDefinition,
   Types,
-  Unpacked
+  Unpacked,
+  Model
 } from 'mongoose'
 
 import extend from 'extend'
@@ -81,6 +82,13 @@ interface AutoIncrementOptions<T extends number, K extends number> {
   incrementBy: PositiveIntegerWithOutZero<K>,
   unique?: boolean
 }
+
+interface ICounter {
+  model: string,
+  field: string,
+  count: number
+}
+
 const startAt = <T extends number>(startAt: Integer<T>): Integer<T> => startAt
 
 const incrementBy = <T extends number>(incrementBy: PositiveIntegerWithOutZero<T>): PositiveIntegerWithOutZero<T> => incrementBy
@@ -106,7 +114,7 @@ enum colors {
 }
 
 let counterSchema: any
-let IdentityCounter: any
+let IdentityCounter: Model<ICounter>
 const version = thiz.version
 const moduleName: string = thiz.name
 
@@ -161,7 +169,7 @@ const initialize = function (connection: Connection) {
   } catch (ex: any) {
     if (ex.name === 'MissingSchemaError') {
       // Create new counter schema.
-      counterSchema = new Schema({
+      counterSchema = new Schema<ICounter>({
         model: { type: String, require: true },
         field: { type: String, require: true },
         count: { type: Number, default: 0 }
@@ -223,7 +231,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
   // Find the counter for this model and the relevant field.
   IdentityCounter.findOne(
     { model: settings.model, field: settings.field }
-  ).then(function (counter: any) {
+  ).then(function (counter) {
     if (!counter) {
       // If no counter exists then create one and save it.
       counter = new IdentityCounter({
@@ -231,6 +239,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
         field: settings.field,
         count: settings.startAt - settings.incrementBy
       })
+      
       counter.save()
     }
   }).catch(function (err: any) { console.log(err) } )
@@ -312,9 +321,11 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
             { $inc: { count: settings.incrementBy } },
             // new:true specifies that the callback should get the counter AFTER it is updated (incremented).
             { new: true }
-          ).then(function (updatedIdentityCounter: any) { 
+          ).then(function (updatedIdentityCounter: (mongoose.Document<unknown, {}, ICounter> & Omit<ICounter & {
+            _id: Types.ObjectId;
+          }, never>) | null) { 
             // If there are no errors then go ahead and set the document's field to the current count.
-            doc[settings.field] = updatedIdentityCounter.count
+            doc[settings.field] = updatedIdentityCounter?.count
             // Continue with default document save functionality.
             next()
           })
