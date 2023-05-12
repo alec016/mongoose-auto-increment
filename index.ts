@@ -280,7 +280,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
 
   // Every time documents in this schema are saved, run this logic.
   schema.pre('save', function (next: any) {
-    const doc: any = this
+    const doc = this
     // Only do this if it is a new document (see http://mongoosejs.com/docs/api.html#document_Document-isNew)
     if (doc.isNew) {
       // Declare self-invoking save function.
