@@ -279,7 +279,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
   schema.static('resetCount', resetCount)
 
   // Every time documents in this schema are saved, run this logic.
-  schema.pre('save', function (next: any) {
+  schema.pre('save', function (next) {
     const doc = this
     // Only do this if it is a new document (see http://mongoosejs.com/docs/api.html#document_Document-isNew)
     if (doc.isNew) {
@@ -320,7 +320,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
           })
         }
       } catch (err) {
-        next(err)
+        next(err as Error)
       }
       // If not ready then set a 5 millisecond timer and try to save again. It will keep doing this until
       // the counter collection is ready.
