@@ -1,10 +1,15 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 /* eslint-disable brace-style */
 /* eslint-disable n/handle-callback-err */
 // Module Scope
-const { Schema } = require('mongoose');
-const extend = require('extend');
-const thiz = require('./package.json');
-const { exec } = require('child_process');
+const mongoose_1 = require("mongoose");
+const extend_1 = __importDefault(require("extend"));
+const package_json_1 = __importDefault(require("./package.json"));
+const child_process_1 = require("child_process");
 const startAt = (startAt) => startAt;
 const incrementBy = (incrementBy) => incrementBy;
 var colors;
@@ -29,8 +34,8 @@ var colors;
 })(colors || (colors = {}));
 let counterSchema;
 let IdentityCounter;
-const version = thiz.version;
-const moduleName = thiz.name;
+const version = package_json_1.default.version;
+const moduleName = package_json_1.default.name;
 const templateVersion = (version) => `
   ${colors.Green}${'-'.repeat(66)}
   ${colors.Green}|${' '.repeat(64)}|
@@ -49,7 +54,6 @@ const templateError = (method, error) => `
   |${' '.repeat(38)}|
   ${'-'.repeat(40)}${colors.Clear}
 `;
-
 const templateVersionMatch = () => `
   ${colors.Green}${'-'.repeat(37)}
   |${' '.repeat(35)}|
@@ -57,11 +61,10 @@ const templateVersionMatch = () => `
   |${colors.White}     of mongoose-autoincrement     ${colors.Green}|
   |${' '.repeat(35)}|
   ${'-'.repeat(37)}${colors.Clear}
-`
-
+`;
 // Initialize plugin by creating counter collection in database.
 const initialize = function (connection) {
-    exec(`npm view ${moduleName} version`, (error, stdout, stderr) => {
+    (0, child_process_1.exec)(`npm view ${moduleName} version`, (error, stdout, stderr) => {
         if (error) {
             console.error(`error: ${error.message}`);
             return;
@@ -73,8 +76,9 @@ const initialize = function (connection) {
         stdout = stdout.replaceAll('\n', '');
         if (version < stdout) {
             console.log(templateVersion(stdout));
-        } else {
-            console.log(templateVersionMatch())
+        }
+        else {
+            console.log(templateVersionMatch());
         }
     });
     try {
@@ -83,7 +87,7 @@ const initialize = function (connection) {
     catch (ex) {
         if (ex.name === 'MissingSchemaError') {
             // Create new counter schema.
-            counterSchema = new Schema({
+            counterSchema = new mongoose_1.Schema({
                 model: { type: String, require: true },
                 field: { type: String, require: true },
                 count: { type: Number, default: 0 }
@@ -120,18 +124,19 @@ const plugin = async function (schema, options) {
             break;
         // If object, the user passed in a hash of options.
         case 'object':
-            extend(settings, options);
+            (0, extend_1.default)(settings, options);
             break;
     }
     if (settings.model == null)
         throw new Error('model must be set');
+    const field = settings.field;
     // Add properties for field in schema.
-    fields[settings.field] = {
+    fields[field] = {
         type: Number,
         require: true
     };
     if (settings.field !== `id`)
-        fields[settings.field].unique = settings.unique;
+        fields[field].unique = settings.unique;
     schema.add(fields);
     // Find the counter for this model and the relevant field.
     IdentityCounter.findOne({ model: settings.model, field: settings.field }).then(function (counter) {
@@ -214,7 +219,7 @@ const plugin = async function (schema, options) {
                     // new:true specifies that the callback should get the counter AFTER it is updated (incremented).
                     { new: true }).then(function (updatedIdentityCounter) {
                         // If there are no errors then go ahead and set the document's field to the current count.
-                        doc[settings.field] = updatedIdentityCounter.count;
+                        doc[settings.field] = updatedIdentityCounter?.count;
                         // Continue with default document save functionality.
                         next();
                     });
@@ -236,6 +241,8 @@ const autoIncrement = {
     initialize,
     plugin,
     colors,
-    templateError
+    templateError,
+    startAt,
+    incrementBy
 };
 module.exports = autoIncrement;

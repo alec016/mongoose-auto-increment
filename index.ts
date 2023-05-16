@@ -348,7 +348,9 @@ const autoIncrement = {
   initialize,
   plugin,
   colors,
-  templateError
+  templateError,
+  startAt,
+  incrementBy
 }
 
 module.exports = autoIncrement

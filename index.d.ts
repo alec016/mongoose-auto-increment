@@ -26,21 +26,21 @@ declare module '@alec016/mongoose-autoincrement' {
    * Type definition for Integer numbers ( no decimals )
    */
   type Integer<T extends number> = 
-    number extends T ? never :
+    number | Number extends T ? never :
     `${T}` extends `${any}.${any}` ? never : T
 
   /**
    * Type definition for non negative Integers
    */
   type PositiveInteger<T extends number> = 
-    number extends T ? never :
+    number | Number extends T ? never :
     `${T}` extends `-${any}` | `${any}.${any}` ? never : T
 
   /**
    * Type definition for non negative Integers without zero
    */
   type PositiveIntegerWithOutZero<T extends number> =
-    number extends T ? never :
+    number | Number extends T ? never :
     `${T}` extends '0' | `-${any}` | `${any}.${any}` ? never : T
 
   /**

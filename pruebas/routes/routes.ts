@@ -1,5 +1,6 @@
-const User = require('../models/User')
-const router = require('express').Router()
+import { User } from '../models/User'
+import { Router } from 'express'
+const router = Router()
 
 router.get('/user', async (req, res) => {
     res.status(200).json(await User.find())
@@ -9,11 +10,12 @@ router.post('/user', async (req, res) => {
     const user = new User({
         name: req.body.name
     })
-    res.status(200).json(await user.save())
+    await user.save()
+    res.status(200).json(user)
 })
 
 router.get('/user/:id', async (req, res) => {
     res.status(200).json(await User.findById(req.params.id))
 })
 
-module.exports = router
+export default router

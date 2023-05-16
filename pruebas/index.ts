@@ -1,7 +1,9 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors')
-const autoIncrement = require('@alec016/mongoose-autoincrement')
+/* const express = require('express') */
+import e from 'express'
+import mongoose from 'mongoose'
+import cors from 'cors'
+import autoIncrement from '@alec016/mongoose-autoincrement'
+const express = e
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT || 3000
@@ -14,8 +16,8 @@ mongoose.connect(DB)
 const connection = mongoose.connection
 autoIncrement.initialize(connection)
 
-const routes = require('./routes/routes.js')
-app.use('/api', routes)
+import router from './routes/routes'
+app.use('/api', router)
 
 app.listen(port, () => {
     console.log(`Server listening on http://localhost:${port}`)
