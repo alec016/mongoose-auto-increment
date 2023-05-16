@@ -24,24 +24,24 @@ import thiz from './package.json'
 import { exec } from 'child_process'
 
 type Integer<T extends number> = 
-  number extends T ? never :
+  number | Number extends T ? never :
   `${T}` extends `${any}.${any}` ? never : T
 
 type PositiveInteger<T extends number> = 
-  number extends T ? never :
+  number | Number extends T ? never :
   `${T}` extends `-${any}` | `${any}.${any}` ? never : T
 
 type PositiveIntegerWithOutZero<T extends number> =
-  number extends T ? never :
+  number | Number extends T ? never :
   `${T}` extends '0' | `-${any}` | `${any}.${any}` ? never : T
 
 
 type Type<T> = 
-  T extends string 
+  T extends string | String 
     ? StringSchemaDefinition 
-    : T extends number 
+    : T extends number | Number
       ? NumberSchemaDefinition 
-      : T extends boolean 
+      : T extends boolean | Boolean
         ? BooleanSchemaDefinition 
         : T extends NativeDate 
           ? DateSchemaDefinition 
@@ -53,17 +53,17 @@ type Type<T> =
                 ? ObjectIdSchemaDefinition 
                 : T extends Types.ObjectId[] 
                   ? AnyArray<ObjectIdSchemaDefinition> | AnyArray<SchemaTypeOptions<ObjectId>> 
-                  : T extends object[] 
+                  : T extends object[] | Object[]
                     ? (AnyArray<Schema<any, any, any>> | AnyArray<SchemaDefinition<Unpacked<T>>> | AnyArray<SchemaTypeOptions<Unpacked<T>>>) 
-                    : T extends string[] 
-                      ? AnyArray<StringSchemaDefinition> | AnyArray<SchemaTypeOptions<string>> 
-                      : T extends number[] 
-                        ? AnyArray<NumberSchemaDefinition> | AnyArray<SchemaTypeOptions<number>> 
-                        : T extends boolean[] 
-                          ? AnyArray<BooleanSchemaDefinition> | AnyArray<SchemaTypeOptions<boolean>> 
+                    : T extends string[] | String[]
+                      ? AnyArray<StringSchemaDefinition> | AnyArray<SchemaTypeOptions<string | String>> 
+                      : T extends number[] | Number[]
+                        ? AnyArray<NumberSchemaDefinition> | AnyArray<SchemaTypeOptions<number | Number>> 
+                        : T extends boolean[] | Boolean[]
+                          ? AnyArray<BooleanSchemaDefinition> | AnyArray<SchemaTypeOptions<boolean | Boolean>> 
                           : T extends Function[] 
-                            ? AnyArray<Function | string> | AnyArray<SchemaTypeOptions<Unpacked<T>>> 
-                            : T | typeof SchemaType | Schema<any, any, any> | SchemaDefinition<T> | Function | AnyArray<Function>;
+                            ? AnyArray<Function | string | String> | AnyArray<SchemaTypeOptions<Unpacked<T>>> 
+                            : T | typeof SchemaType | Schema<any, any, any> | SchemaDefinition<T> | Function | AnyArray<Function>
 
 type Field<T = undefined> = {
   type: Type<T>
@@ -219,13 +219,16 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
 
   if (settings.model == null) 
     throw new Error('model must be set')
+  
+  const field: string = settings.field
 
   // Add properties for field in schema.
-  fields[settings.field] = {
+  fields[field] = {
     type: Number,
     require: true
   }
-  if (settings.field !== `id`) fields[settings.field].unique = settings.unique
+
+  if (settings.field !== `id`) fields[field].unique = settings.unique
   schema.add(fields)
 
   // Find the counter for this model and the relevant field.
