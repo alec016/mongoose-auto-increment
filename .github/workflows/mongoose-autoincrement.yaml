@@ -61,8 +61,7 @@ jobs:
         run: npm run build
 
   publish:
-    if: |
-      !contains(github.event.head_commit.message, '[publish skip]')
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.release == true }}
     needs: build
     runs-on: ubuntu-latest
     steps:
