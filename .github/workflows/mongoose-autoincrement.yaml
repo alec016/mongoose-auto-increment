@@ -17,6 +17,12 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: mongodb/mongodb-community-server
+      env:
+        MONGO_INITDB_DATABASE: 'knowledge'
+        MONGODB_INITDB_ROOT_USERNAME: ${{secrets.MONGO_INITDB_ROOT_USERNAME}}
+        MONGO_INITDB_ROOT_PASSWORD: ${{secrets.MONGO_INITDB_ROOT_PASSWORD}}
     if: |
       !contains(github.event.head_commit.message, '[test skip]')
     steps:
@@ -36,6 +42,9 @@ jobs:
         run: npm install
 
       - name: Run tests
+        env:
+          MONGO_INITDB_ROOT_USERNAME: ${{secrets.MONGO_INITDB_ROOT_USERNAME}}
+          MONGO_INITDB_ROOT_PASSWORD: ${{secrets.MONGO_INITDB_ROOT_PASSWORD}}
         run: npm run test
 
   build:
