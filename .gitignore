@@ -1,13 +1,12 @@
 # node modules folder
 node_modules
 
-#npm ignore files/folders for publishing
-.npmignore
-
 #ignore npm/pnpm/yarn lock json files
 *-lock.json
 
 #test to do while coding
+pruebas/node_modules
+pruebas/*-lock.json
 
 .vs
 .vscode
