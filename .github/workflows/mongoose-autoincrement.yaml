@@ -72,12 +72,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.10.0'
-          registry-url: 'https://registry.npmjs.org'
           scope: '@alec016'
 
       - name: Install Dependencies
         run: npm install
-        
+
       - name: Publish to NPM
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
