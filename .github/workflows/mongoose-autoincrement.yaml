@@ -18,7 +18,7 @@ jobs:
   build:
     if: |
       !contains(github.event.head_commit.message, '[build skip]')
-    runs-on: ubutntu-latest
+    runs-on: ubutntu-20.04
     steps:
       - name: Build
         run: npm run build
@@ -71,7 +71,7 @@ jobs:
   publish:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.release == true }}
     needs: test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Publish to NPM
         env:
