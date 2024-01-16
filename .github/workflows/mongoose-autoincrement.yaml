@@ -23,6 +23,9 @@ jobs:
         MONGO_INITDB_DATABASE: 'knowledge'
         MONGODB_INITDB_ROOT_USERNAME: ${{secrets.MONGO_INITDB_ROOT_USERNAME}}
         MONGO_INITDB_ROOT_PASSWORD: ${{secrets.MONGO_INITDB_ROOT_PASSWORD}}
+    steps:
+      - name:
+        run: mongosh --help
 
   test:
     runs-on: ubuntu-latest
