@@ -6,8 +6,8 @@ require('dotenv').config()
 
 before(async function () {
   await mongoose.connect('mongodb://localhost:27017', {
-    user: process.env.MONGO_INITDB_ROOT_USERNAME,
-    pass: process.env.MONGO_INITDB_ROOT_PASSWORD,
+    /* user: process.env.MONGO_INITDB_ROOT_USERNAME,
+    pass: process.env.MONGO_INITDB_ROOT_PASSWORD, */
     autoCreate: true,
     dbName: 'test_auto_increment'
   })
