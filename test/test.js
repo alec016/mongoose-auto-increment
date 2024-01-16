@@ -20,11 +20,13 @@ after(async function () {
 })
 
 afterEach(async function () {
-  const userDeleted = await mongoose.connection.models.User?.collection.drop()
-  if (userDeleted) {
-    delete mongoose.connection.models.User
-    identityDeleted = await mongoose.connection.models.IdentityCounter?.collection.drop()
-  }
+  try {
+    const userDeleted = await mongoose.connection.models.User?.collection.drop()
+    if (userDeleted) {
+      delete mongoose.connection.models.User
+      identityDeleted = await mongoose.connection.models.IdentityCounter?.collection.drop()
+    }
+  } catch (_) {}
 })
 
 describe('mongoose-auto-increment', function () {
