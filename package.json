@@ -9,7 +9,7 @@
     "test": "mocha -R spec --exit -j 0",
     "build": "tsc",
     "commit": "git commit -am \"update\"",
-    "commit:skipTest": "git commit -am \"update [skip test]\""
+    "commit:skipTest": "git commit -am \"update [test skip]\""
   },
   "author": {
     "name": "alec_016",
