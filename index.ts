@@ -23,11 +23,11 @@ import extend from 'extend'
 import thiz from './package.json'
 import { exec } from 'child_process'
 
-type Integer<T extends number> = 
+type Integer<T extends number> =
   number | Number extends T ? never :
   `${T}` extends `${any}.${any}` ? never : T
 
-type PositiveInteger<T extends number> = 
+type PositiveInteger<T extends number> =
   number | Number extends T ? never :
   `${T}` extends `-${any}` | `${any}.${any}` ? never : T
 
@@ -36,33 +36,33 @@ type PositiveIntegerWithOutZero<T extends number> =
   `${T}` extends '0' | `-${any}` | `${any}.${any}` ? never : T
 
 
-type Type<T> = 
-  T extends string | String 
-    ? StringSchemaDefinition 
+type Type<T> =
+  T extends string | String
+    ? StringSchemaDefinition
     : T extends number | Number
-      ? NumberSchemaDefinition 
+      ? NumberSchemaDefinition
       : T extends boolean | Boolean
-        ? BooleanSchemaDefinition 
-        : T extends NativeDate 
-          ? DateSchemaDefinition 
-          : T extends Map<any, any> 
-            ? SchemaDefinition<typeof Map> 
-            : T extends Buffer 
-              ? SchemaDefinition<typeof Buffer> 
-              : T extends Types.ObjectId 
-                ? ObjectIdSchemaDefinition 
-                : T extends Types.ObjectId[] 
-                  ? AnyArray<ObjectIdSchemaDefinition> | AnyArray<SchemaTypeOptions<ObjectId>> 
+        ? BooleanSchemaDefinition
+        : T extends NativeDate
+          ? DateSchemaDefinition
+          : T extends Map<any, any>
+            ? SchemaDefinition<typeof Map>
+            : T extends Buffer
+              ? SchemaDefinition<typeof Buffer>
+              : T extends Types.ObjectId
+                ? ObjectIdSchemaDefinition
+                : T extends Types.ObjectId[]
+                  ? AnyArray<ObjectIdSchemaDefinition> | AnyArray<SchemaTypeOptions<ObjectId>>
                   : T extends object[] | Object[]
-                    ? (AnyArray<Schema<any, any, any>> | AnyArray<SchemaDefinition<Unpacked<T>>> | AnyArray<SchemaTypeOptions<Unpacked<T>>>) 
+                    ? (AnyArray<Schema<any, any, any>> | AnyArray<SchemaDefinition<Unpacked<T>>> | AnyArray<SchemaTypeOptions<Unpacked<T>>>)
                     : T extends string[] | String[]
-                      ? AnyArray<StringSchemaDefinition> | AnyArray<SchemaTypeOptions<string | String>> 
+                      ? AnyArray<StringSchemaDefinition> | AnyArray<SchemaTypeOptions<string | String>>
                       : T extends number[] | Number[]
-                        ? AnyArray<NumberSchemaDefinition> | AnyArray<SchemaTypeOptions<number | Number>> 
+                        ? AnyArray<NumberSchemaDefinition> | AnyArray<SchemaTypeOptions<number | Number>>
                         : T extends boolean[] | Boolean[]
-                          ? AnyArray<BooleanSchemaDefinition> | AnyArray<SchemaTypeOptions<boolean | Boolean>> 
-                          : T extends Function[] 
-                            ? AnyArray<Function | string | String> | AnyArray<SchemaTypeOptions<Unpacked<T>>> 
+                          ? AnyArray<BooleanSchemaDefinition> | AnyArray<SchemaTypeOptions<boolean | Boolean>>
+                          : T extends Function[]
+                            ? AnyArray<Function | string | String> | AnyArray<SchemaTypeOptions<Unpacked<T>>>
                             : T | typeof SchemaType | Schema<any, any, any> | SchemaDefinition<T> | Function | AnyArray<Function>
 
 type Field<T = undefined> = {
@@ -174,13 +174,13 @@ const initialize = function (connection: Connection) {
         field: { type: String, require: true },
         count: { type: Number, default: 0 }
       })
-      
+
       // Create a unique index using the "field" and "model" fields.
       counterSchema.index(
         { field: 1, model: 1 },
         { unique: true, required: true, index: -1 }
       )
-      
+
       // Create model using new schema.
       IdentityCounter = connection.model('IdentityCounter', counterSchema)
     } else throw ex
@@ -191,7 +191,7 @@ const initialize = function (connection: Connection) {
 const plugin = async function<T extends number, K extends number>(schema: Schema, options: AutoIncrementOptions<T, K> | string) {
   // If we don't have reference to the counterSchema or the IdentityCounter model then the plugin was most likely not
   // initialized properly so throw an error.
-  if (!counterSchema || !IdentityCounter) { 
+  if (!counterSchema || !IdentityCounter) {
     throw new Error('Mongoose autoIncrement must be initialized')
   }
 
@@ -205,7 +205,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
   }
 
   const fields: Fields = {} // A hash of fields to add properties to in Mongoose.
-  
+
   switch (typeof options) {
     // If string, the user chose to pass in just the model name.
     case 'string':
@@ -217,9 +217,9 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
       break
   }
 
-  if (settings.model == null) 
+  if (settings.model == null)
     throw new Error('model must be set')
-  
+
   const field: string = settings.field
 
   // Add properties for field in schema.
@@ -228,7 +228,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
     require: true
   }
 
-  if (settings.field !== `id`) fields[field].unique = settings.unique
+  if (settings.field !== `id`) fields[field]!.unique = settings.unique
   schema.add(fields)
 
   // Find the counter for this model and the relevant field.
@@ -242,7 +242,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
         field: settings.field,
         count: settings.startAt - settings.incrementBy
       })
-      
+
       counter.save()
     }
   }).catch(function (err: any) { console.log(err) } )
@@ -326,7 +326,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
             { new: true }
           ).then(function (updatedIdentityCounter: (mongoose.Document<unknown, {}, ICounter> & Omit<ICounter & {
             _id: Types.ObjectId;
-          }, never>) | null) { 
+          }, never>) | null) {
             // If there are no errors then go ahead and set the document's field to the current count.
             doc[settings.field] = updatedIdentityCounter?.count
             // Continue with default document save functionality.
