@@ -8,8 +8,8 @@
   "scripts": {
     "test": "mocha -R spec --exit -j 0",
     "build": "tsc",
-    "commit": "git commit -am \"update\"",
-    "commit:skipTest": "git commit -am \"update [test skip]\""
+    "commit": "git commit -am \"update\" && git push -u origin master --all",
+    "commit:skipTest": "git commit -am \"update [test skip]\" && git push -u origin master --all"
   },
   "author": {
     "name": "alec_016",
