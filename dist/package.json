@@ -1,12 +1,12 @@
 {
     "name": "@alec016/mongoose-autoincrement",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "description": "This plugin allows you to autoincrement any field on any mongoose schema that you wish.",
     "main": "dist/index.js",
     "types": "index.d.ts",
     "repository": "https://github.com:alec016/mongoose-auto-increment",
     "scripts": {
-        "test": "node_modules/mocha/bin/mocha",
+        "test": "mocha -R spec --exit -j 0",
         "build": "tsc"
     },
     "author": {
@@ -15,18 +15,19 @@
     },
     "license": "ISC",
     "peerDependencies": {
-        "mongoose": "^7.1.0"
+        "mongoose": "^8.0.4"
     },
     "dependencies": {
         "extend": "^3.0.2"
     },
     "devDependencies": {
-        "@types/extend": "^3.0.1",
-        "async": "^3.2.4",
-        "chai": "^4.3.7",
+        "@types/extend": "^3.0.4",
+        "async": "^3.2.5",
+        "chai": "^5.0.0",
+        "dotenv": "^16.3.1",
         "mocha": "^10.2.0",
-        "mongoose": "^7.1.0",
-        "typescript": "^5.0.4"
+        "mongoose": "^8.0.4",
+        "typescript": "^5.3.3"
     },
     "keywords": [
         "mongoose",

@@ -44,25 +44,25 @@ bookSchema.plugin(autoIncrement.plugin, 'Book');
 const Book = connection.model('Book', bookSchema);
 ````
 
-That's it. Now you can create book entities at will and they will have an `_id` field added of type `Number` and will automatically increment with each new document. Even declaring references is easy, just remember to change the reference property's type to `Number` instead of `ObjectId` if the referenced model is also using the plugin.
+That's it. Now you can create book entities at will and they will have an `id` field added of type `Number` and will automatically increment with each new document. Even declaring references is easy, just remember to change the reference property's type to `Number` instead of `ObjectId` if the referenced model is also using the plugin.
 
 ````ts
 const authorSchema = new mongoose.Schema({
     name: String
 });
-    
+
 const bookSchema = new Schema({
     author: { type: Number, ref: 'Author' },
     title: String,
     genre: String,
     publishDate: Date
 });
-    
+
 bookSchema.plugin(autoIncrement.plugin, 'Book');
 authorSchema.plugin(autoIncrement.plugin, 'Author');
 ````
 
-### Want a field other than `_id`?
+### Want a field other than `id`?
 
 ````ts
 bookSchema.plugin(autoIncrement.plugin, { model: 'Book', field: 'bookId' });

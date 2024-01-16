@@ -13,3 +13,5 @@ pruebas/*-lock.json
 
 .vs
 .vscode
+
+*.env*

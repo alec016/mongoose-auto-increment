@@ -6,7 +6,7 @@
   "types": "index.d.ts",
   "repository": "https://github.com:alec016/mongoose-auto-increment",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha",
+    "test": "mocha -R spec --exit -j 0",
     "build": "tsc"
   },
   "author": {
@@ -24,6 +24,7 @@
     "@types/extend": "^3.0.4",
     "async": "^3.2.5",
     "chai": "^5.0.0",
+    "dotenv": "^16.3.1",
     "mocha": "^10.2.0",
     "mongoose": "^8.0.4",
     "typescript": "^5.3.3"

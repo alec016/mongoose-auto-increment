@@ -93,7 +93,7 @@ const initialize = function (connection) {
                 count: { type: Number, default: 0 }
             });
             // Create a unique index using the "field" and "model" fields.
-            counterSchema.index({ field: 1, model: 1 }, { unique: true, required: true, index: -1 });
+            counterSchema.index({ field: 1, model: 1 });
             // Create model using new schema.
             IdentityCounter = connection.model('IdentityCounter', counterSchema);
         }
@@ -110,10 +110,10 @@ const plugin = async function (schema, options) {
     }
     // Default settings and plugin scope variables.
     const settings = {
-        model: undefined,
-        field: `_id`,
-        startAt: startAt(0),
-        incrementBy: incrementBy(1),
+        model: undefined, // The model to configure the plugin for.
+        field: `id`, // The field the plugin should track.
+        startAt: startAt(0), // The number the count should start at.
+        incrementBy: incrementBy(1), // The number by which to increment the count each time.
         unique: true // Should we create a unique index for the field
     };
     const fields = {}; // A hash of fields to add properties to in Mongoose.
@@ -139,7 +139,7 @@ const plugin = async function (schema, options) {
         fields[field].unique = settings.unique;
     schema.add(fields);
     // Find the counter for this model and the relevant field.
-    IdentityCounter.findOne({ model: settings.model, field: settings.field }).then(function (counter) {
+    IdentityCounter.findOne({ model: settings.model, field: settings.field }).exec().then(function (counter) {
         if (!counter) {
             // If no counter exists then create one and save it.
             counter = new IdentityCounter({
@@ -156,7 +156,7 @@ const plugin = async function (schema, options) {
             IdentityCounter.findOne({
                 model: settings.model,
                 field: settings.field
-            }).then(function (counter) {
+            }).exec().then(function (counter) {
                 callback(null, counter === null
                     ? settings.startAt
                     : counter.count + settings.incrementBy);
@@ -173,7 +173,7 @@ const plugin = async function (schema, options) {
     const resetCount = function (callback) {
         try {
             IdentityCounter.findOneAndUpdate({ model: settings.model, field: settings.field }, { count: settings.startAt - settings.incrementBy }, { new: true } // new: true specifies that the callback should get the updated counter.
-            ).then(function () {
+            ).exec().then(function () {
                 callback(null, settings.startAt);
             });
         }
@@ -206,7 +206,7 @@ const plugin = async function (schema, options) {
                         count: { $lt: doc[settings.field] }
                     }, 
                     // Change the count of the value found to the new field value.
-                    { count: doc[settings.field] }).then(function () { next(); });
+                    { count: doc[settings.field] }).exec().then(function () { next(); });
                     // Continue with default document save functionality.
                 }
                 else {
@@ -217,7 +217,7 @@ const plugin = async function (schema, options) {
                     // Increment the count by `incrementBy`.
                     { $inc: { count: settings.incrementBy } }, 
                     // new:true specifies that the callback should get the counter AFTER it is updated (incremented).
-                    { new: true }).then(function (updatedIdentityCounter) {
+                    { new: true }).exec().then(function (updatedIdentityCounter) {
                         // If there are no errors then go ahead and set the document's field to the current count.
                         doc[settings.field] = updatedIdentityCounter?.count;
                         // Continue with default document save functionality.

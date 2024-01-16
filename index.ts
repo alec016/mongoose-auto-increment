@@ -113,7 +113,7 @@ enum colors {
   Clear = '\x1B[0m'
 }
 
-let counterSchema: any
+let counterSchema: Schema<ICounter>
 let IdentityCounter: Model<ICounter>
 const version = thiz.version
 const moduleName: string = thiz.name
@@ -127,7 +127,7 @@ const templateVersion = (version: string) => `
   ${colors.Green}|${' '.repeat(2)}${colors.Yellow}https://www.npmjs.com/package/@alec016/mongoose-autoincrement${colors.Green} |
   ${colors.Green}|${' '.repeat(64)}|
   ${colors.Green}${'-'.repeat(66)}${colors.Clear}
-`
+` as const
 const templateError = (method: string, error: string) => `
   ${colors.Red}${'-'.repeat(40)}
   |${' '.repeat(38)}|
@@ -135,7 +135,7 @@ const templateError = (method: string, error: string) => `
   |${' '.repeat(4)}Caused by: ${error}${' '.repeat(4)}|
   |${' '.repeat(38)}|
   ${'-'.repeat(40)}${colors.Clear}
-`
+` as const
 
 const templateVersionMatch = () => `
   ${colors.Green}${'-'.repeat(37)}
@@ -144,7 +144,7 @@ const templateVersionMatch = () => `
   |${colors.White}     of mongoose-autoincrement     ${colors.Green}|
   |${' '.repeat(35)}|
   ${'-'.repeat(37)}${colors.Clear}
-`
+` as const
 
 // Initialize plugin by creating counter collection in database.
 const initialize = function (connection: Connection) {
@@ -165,7 +165,7 @@ const initialize = function (connection: Connection) {
     }
   })
   try {
-    IdentityCounter = connection.model('IdentityCounter')
+    IdentityCounter = connection.model('IdentityCounter') as Model<ICounter>
   } catch (ex: any) {
     if (ex.name === 'MissingSchemaError') {
       // Create new counter schema.
@@ -176,10 +176,7 @@ const initialize = function (connection: Connection) {
       })
 
       // Create a unique index using the "field" and "model" fields.
-      counterSchema.index(
-        { field: 1, model: 1 },
-        { unique: true, required: true, index: -1 }
-      )
+      counterSchema.index({ field: 1, model: 1 })
 
       // Create model using new schema.
       IdentityCounter = connection.model('IdentityCounter', counterSchema)
@@ -198,7 +195,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
   // Default settings and plugin scope variables.
   const settings: AutoIncrementOptions<T, K> | AutoIncrementOptions<0 , 1> = {
     model: undefined, // The model to configure the plugin for.
-    field: `_id`, // The field the plugin should track.
+    field: `id`, // The field the plugin should track.
     startAt: startAt(0), // The number the count should start at.
     incrementBy: incrementBy(1), // The number by which to increment the count each time.
     unique: true // Should we create a unique index for the field
@@ -234,7 +231,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
   // Find the counter for this model and the relevant field.
   IdentityCounter.findOne(
     { model: settings.model, field: settings.field }
-  ).then(function (counter) {
+  ).exec().then(function (counter) {
     if (!counter) {
       // If no counter exists then create one and save it.
       counter = new IdentityCounter({
@@ -256,7 +253,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
           model: settings.model,
           field: settings.field
         }
-      ).then(function (counter: any) {
+      ).exec().then(function (counter) {
         callback(
           null,
           counter === null
@@ -279,7 +276,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
         { model: settings.model, field: settings.field },
         { count: settings.startAt - settings.incrementBy },
         { new: true } // new: true specifies that the callback should get the updated counter.
-      ).then(function () {
+      ).exec().then(function () {
         callback(null, settings.startAt)
       })
     } catch (e) {
@@ -313,7 +310,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
             },
             // Change the count of the value found to the new field value.
             { count: doc[settings.field] }
-          ).then(function () { next() })
+          ).exec().then(function () { next() })
           // Continue with default document save functionality.
         } else {
           // Find the counter collection entry for this model and field and update it.
@@ -324,7 +321,7 @@ const plugin = async function<T extends number, K extends number>(schema: Schema
             { $inc: { count: settings.incrementBy } },
             // new:true specifies that the callback should get the counter AFTER it is updated (incremented).
             { new: true }
-          ).then(function (updatedIdentityCounter: (mongoose.Document<unknown, {}, ICounter> & Omit<ICounter & {
+          ).exec().then(function (updatedIdentityCounter: (mongoose.Document<unknown, {}, ICounter> & Omit<ICounter & {
             _id: Types.ObjectId;
           }, never>) | null) {
             // If there are no errors then go ahead and set the document's field to the current count.
