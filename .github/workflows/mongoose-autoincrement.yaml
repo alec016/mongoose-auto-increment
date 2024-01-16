@@ -15,10 +15,25 @@ on:
         default: false
 
 jobs:
-  build:
-    runs-on: ubutntu-latest
-    if: ${{ !contains(github.event.head_commit.message, '[build skip]') }}
+  test:
+    if: ${{ !contains(github.event.head_commit.message, '[test skip]') }}
+    runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 30
+
+      - name: Setup NodeJS v20.10.0
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.10.0'
+          registry-url: 'https://registry.npmjs.org'
+          scope: '@alec016'
+
+      - name: Install Dependencies
+        run: npm install
+
       - name: Install gnupg and curl
         run: sudo apt-get install gnupg curl
 
@@ -37,29 +52,6 @@ jobs:
       - name: Start MongoDB
         run: sudo systemctl start mongod
 
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 30
-
-      - name: Setup NodeJS v20.10.0
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.10.0'
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@alec016'
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build
-        run: npm run build
-
-  test:
-    if: ${{ !contains(github.event.head_commit.message, '[test skip]') }}
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Run tests
         env:
           MONGO_INITDB_ROOT_USERNAME: ${{secrets.MONGO_INITDB_ROOT_USERNAME}}

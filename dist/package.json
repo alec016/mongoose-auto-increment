@@ -7,7 +7,9 @@
     "repository": "https://github.com:alec016/mongoose-auto-increment",
     "scripts": {
         "test": "mocha -R spec --exit -j 0",
-        "build": "tsc"
+        "build": "tsc",
+        "commit": "git commit -a -m",
+        "commit:skipTest": "git commit -a -m [skip test]"
     },
     "author": {
         "name": "alec_016",
