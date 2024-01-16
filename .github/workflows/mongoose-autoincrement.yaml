@@ -15,8 +15,17 @@ on:
         default: false
 
 jobs:
+  build:
+    if: |
+      !contains(github.event.head_commit.message, '[build skip]')
+    runs-on: ubutntu-latest
+    steps:
+      - name: Build
+        run: npm run build
+
   test:
     runs-on: ubuntu-20.04
+    needs: build
     if: |
       !contains(github.event.head_commit.message, '[test skip]')
     steps:
@@ -59,18 +68,9 @@ jobs:
           MONGO_INITDB_ROOT_PASSWORD: ${{secrets.MONGO_INITDB_ROOT_PASSWORD}}
         run: npm run test
 
-  build:
-    if: |
-      !contains(github.event.head_commit.message, '[build skip]')
-    needs: test
-    runs-on: ubutntu-latest
-    steps:
-      - name: Build
-        run: npm run build
-
   publish:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.release == true }}
-    needs: build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Publish to NPM
