@@ -8,8 +8,6 @@ node_modules
 *-lock.json
 
 #test to do while coding
-pruebas/node_modules
-pruebas/*-lock.json
 
 .vs
 .vscode
