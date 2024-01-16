@@ -15,24 +15,29 @@ on:
         default: false
 
 jobs:
-  mongo_container:
-    runs-on: ubuntu-latest
-    container:
-      image: mongodb/mongodb-community-server
-      env:
-        MONGO_INITDB_DATABASE: 'knowledge'
-        MONGODB_INITDB_ROOT_USERNAME: ${{secrets.MONGO_INITDB_ROOT_USERNAME}}
-        MONGO_INITDB_ROOT_PASSWORD: ${{secrets.MONGO_INITDB_ROOT_PASSWORD}}
-    steps:
-      - name:
-        run: mongosh --help
-
   test:
-    runs-on: ubuntu-latest
-    needs: mongo_container
+    runs-on: ubuntu-20.04
     if: |
       !contains(github.event.head_commit.message, '[test skip]')
     steps:
+      - name: Install gnupg and curl
+        run: sudo apt-get install gnupg curl
+
+      - name: Import the public key
+        run: curl -fsSL https://pgp.mongodb.com/server-7.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
+
+      - name: Create a list of file for MongoDB
+        run: echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+
+      - name: Reload packages
+        run: sudo apt-get update
+
+      - name: Install MongoDB packages
+        run: sudo apt-get install -y mongodb-org
+
+      - name: Start MongoDB
+        run: sudo systemctl start mongod
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
