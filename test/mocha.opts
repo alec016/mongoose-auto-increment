@@ -1,1 +1,1 @@
--R spec
+-R spec --exit -j 0
