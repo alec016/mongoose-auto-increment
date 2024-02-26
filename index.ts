@@ -115,7 +115,7 @@ enum colors {
 
 let counterSchema: Schema<ICounter>
 let IdentityCounter: Model<ICounter>
-const version = thiz.version
+const version = thiz.version.replaceAll('^', '')
 const moduleName: string = thiz.name
 
 const templateVersion = (version: string) => `
@@ -157,7 +157,7 @@ const initialize = function (connection: Connection) {
       console.error(`error: ${stderr}`)
       return
     }
-    stdout = stdout.replaceAll('\n', '')
+    stdout = stdout.replaceAll('\n', '').replaceAll('^', '')
     if (version < stdout) {
       console.log(templateVersion(stdout))
     } else {

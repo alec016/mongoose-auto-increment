@@ -34,7 +34,7 @@ var colors;
 })(colors || (colors = {}));
 let counterSchema;
 let IdentityCounter;
-const version = package_json_1.default.version;
+const version = package_json_1.default.version.replaceAll('^', '');
 const moduleName = package_json_1.default.name;
 const templateVersion = (version) => `
   ${colors.Green}${'-'.repeat(66)}
@@ -73,7 +73,7 @@ const initialize = function (connection) {
             console.error(`error: ${stderr}`);
             return;
         }
-        stdout = stdout.replaceAll('\n', '');
+        stdout = stdout.replaceAll('\n', '').replaceAll('^', '');
         if (version < stdout) {
             console.log(templateVersion(stdout));
         }

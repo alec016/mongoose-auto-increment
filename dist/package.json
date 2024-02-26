@@ -1,6 +1,6 @@
 {
     "name": "@alec016/mongoose-autoincrement",
-    "version": "1.5.2",
+    "version": "1.5.4",
     "description": "This plugin allows you to autoincrement any field on any mongoose schema that you wish.",
     "main": "dist/index.js",
     "types": "index.d.ts",
@@ -8,8 +8,8 @@
     "scripts": {
         "test": "mocha -R spec --exit -j 0",
         "build": "tsc",
-        "commit": "git commit -a -m",
-        "commit:skipTest": "git commit -a -m [skip test]"
+        "commit": "git commit -am \"update\" && git push -u origin master",
+        "commit:skipTest": "git commit -am \"update [test skip]\" && git push -u origin master"
     },
     "author": {
         "name": "alec_016",
